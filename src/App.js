@@ -3,10 +3,12 @@ import React, { useEffect } from 'react';
 import axios from 'axios';
 
 function App() {
-  //states
+  //STATES
   const [hotspots, setHotspots] = React.useState({ hits: [], errorMessage: '' });
+  const [isSortedAZ, setIsSortedAZ] = React.useState(true);
 
-  //functions
+  //FUNCTIONS
+  //*api call to load hotspots
   useEffect(() => {
     async function fetchData() {
       // Await response
@@ -23,26 +25,58 @@ function App() {
     fetchData();
   }, []);
 
+  //*open map loccation tab
   const onClickMap = (location) => {
     const mapUrl = `https://maps.google.com/?q=${location[0]},${location[1]}`
     window.open(mapUrl, '_blank')
   };
 
+  //*determine a-z sort order
+  // const sortIcon = () =>
+  //   isSortedAZ ? 
+  //     <span>A-Z<i className="fas fa-long-arrow-alt-down"></i></span> :
+  //     <span>Z-A<i className="fas fa-long-arrow-alt-up"></i></span>
+  const sortIcon = 
+    isSortedAZ ? 
+      <span>(A-Z<i className="fas fa-long-arrow-alt-down"></i>)</span> :
+      <span>(Z-A<i className="fas fa-long-arrow-alt-up"></i>)</span>
+
+  //*render table/row/data for hotspots
   const displayHotspots = () =>
-    <ul>
-    {hotspots.hits.map(item => (
-      <li key={item.id}>
-        {item.name}
-        <button
-          className='btn'
-          id='mapBtn'
-          onClick={() => onClickMap(item.location)}
-        >
-          Map
-        </button>
-      </li>
-    ))}
-    </ul>
+    <table>
+      <tbody>
+        <tr>
+          <th>Title{'\u00A0'}{sortIcon}</th>
+          <th>Description</th>
+          <th>Map</th>
+          <th>Favorite</th>
+        </tr>
+        {hotspots.hits.map(item => (
+          <tr key={item.id}>
+            <td>{item.name}</td>
+            <td>{item.description}</td>
+            <td>
+              <button
+                className='btn'
+                id='mapBtn'
+                onClick={() => onClickMap(item.location)}
+                >
+                Map
+              </button>
+            </td>
+            <td>
+              <button
+                className='btn'
+                id='favoriteBtn'
+                // onClick={() => onClickMap(item.location)}
+                >
+                Favorite
+              </button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
 
   return (
     <div className="App">
