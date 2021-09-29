@@ -8,14 +8,32 @@ function App() {
   const [isSortedAZ, setIsSortedAZ] = React.useState(true);
 
   //FUNCTIONS
+  //*sort function
+  const sortTitles = (hotspotsToSort, orderFlag) => {
+    hotspotsToSort.sort((a,b) => {
+      let titleA = a.name.toUpperCase();
+      let titleB = b.name.toUpperCase();
+      if (orderFlag) {
+        return (titleA < titleB) ? -1 : (titleA > titleB) ? 1 : 0;
+      } else {
+        return (titleA > titleB) ? -1 : (titleA < titleB) ? 1 : 0;
+      };
+    });
+  };
+
   //*api call to load hotspots
   useEffect(() => {
     async function fetchData() {
       // Await response
       try {
         const response = await axios('https://origin-top-spots-api.herokuapp.com/api/topspots');
+        //catch data
+        let hotspots = response.data;
+        //sort data
+        sortTitles(hotspots, isSortedAZ)
         //set data to state
-        setHotspots({hits: response.data, errorMessage: ''})
+        setHotspots({hits: hotspots, errorMessage: ''})
+        
       }
       //error
       catch(error) {
@@ -23,7 +41,7 @@ function App() {
       }
     }
     fetchData();
-  }, []);
+  }, [isSortedAZ]);
 
   //*open map loccation tab
   const onClickMap = (location) => {
@@ -32,10 +50,6 @@ function App() {
   };
 
   //*determine a-z sort order
-  // const sortIcon = () =>
-  //   isSortedAZ ? 
-  //     <span>A-Z<i className="fas fa-long-arrow-alt-down"></i></span> :
-  //     <span>Z-A<i className="fas fa-long-arrow-alt-up"></i></span>
   const sortIcon = 
     isSortedAZ ? 
       <span>(A-Z<i className="fas fa-long-arrow-alt-down"></i>)</span> :
@@ -46,7 +60,12 @@ function App() {
     <table>
       <tbody>
         <tr>
-          <th>Title{'\u00A0'}{sortIcon}</th>
+          <th>
+            <button
+              id="sortTitleBtn"
+              className='header'
+              onClick={() => setIsSortedAZ(!isSortedAZ)}
+          >Title{'\u00A0'}{sortIcon}</button></th>
           <th>Description</th>
           <th>Map</th>
           <th>Favorite</th>
