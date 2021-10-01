@@ -6,6 +6,7 @@ function App() {
   //STATES
   const [hotspots, setHotspots] = React.useState({ hits: [], errorMessage: '' });
   const [isSortedAZ, setIsSortedAZ] = React.useState(true);
+  const [favorites, setFavorites] = React.useState([]);
 
   //FUNCTIONS
   //*sort function
@@ -43,10 +44,29 @@ function App() {
     fetchData();
   }, [isSortedAZ]);
 
-  //*open map loccation tab
+  //*open map location tab
   const onClickMap = (location) => {
     const mapUrl = `https://maps.google.com/?q=${location[0]},${location[1]}`
     window.open(mapUrl, '_blank')
+  };
+
+  //*add hotspot to favorite array
+  const onClickFavorite = (hotspot) => {
+    let filteredFavorites = [];
+    filteredFavorites = favorites.filter(favorite => {
+      return favorite.id == hotspot.id;
+    });
+    if (filteredFavorites.length == 0) {
+      setFavorites(favorites.concat(hotspot));
+    };
+  };
+
+  //*delete hotspot from favorite array
+  const onClickDelete = (id) => {
+    let filteredFavorites = favorites.filter(favorite => {
+      return favorite.id != id;
+    });
+    setFavorites(filteredFavorites);
   };
 
   //*determine a-z sort order
@@ -87,7 +107,7 @@ function App() {
               <button
                 className='btn'
                 id='favoriteBtn'
-                // onClick={() => onClickMap(item.location)}
+                onClick={() => onClickFavorite(item)}
                 >
                 Favorite
               </button>
@@ -102,6 +122,20 @@ function App() {
       <h3>San Diego Top Spots</h3>
       <p>Got nothing to do this weekend?</p>
       <p>Now you do!</p>
+      <hr />
+
+      <h4>Favorites</h4>
+      { favorites.map(favorite => {
+        return <p>{favorite.name}<span>{'\u00A0'}
+        <a
+          className='delete'
+          id='deleteFavorite'
+          onClick={() => onClickDelete(favorite.id)}
+        >
+          <i className="far fa-trash-alt"></i>
+        </a>
+        </span></p>
+      })}
       <hr />
 
     {/* Display hotspots hits (success) */}
