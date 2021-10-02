@@ -7,6 +7,7 @@ function App() {
   const [hotspots, setHotspots] = React.useState({ hits: [], errorMessage: '' });
   const [isSortedAZ, setIsSortedAZ] = React.useState(true);
   const [favorites, setFavorites] = React.useState([]);
+  const [favoriteSelected, setFavoriteSelected] = React.useState({});
 
   //FUNCTIONS
   //*sort function
@@ -51,12 +52,12 @@ function App() {
   };
 
   //*add hotspot to favorite array
-  const onClickFavorite = (hotspot) => {
+  const onClickAddFavorite = (hotspot) => {
     let filteredFavorites = [];
     filteredFavorites = favorites.filter(favorite => {
-      return favorite.id == hotspot.id;
+      return favorite.id === hotspot.id;
     });
-    if (filteredFavorites.length == 0) {
+    if (filteredFavorites.length === 0) {
       setFavorites(favorites.concat(hotspot));
     };
   };
@@ -64,28 +65,43 @@ function App() {
   //*delete hotspot from favorite array
   const onClickDelete = (id) => {
     let filteredFavorites = favorites.filter(favorite => {
-      return favorite.id != id;
+      return favorite.id !== id;
     });
     setFavorites(filteredFavorites);
+
+    if (favoriteSelected.id === id) {
+      setFavoriteSelected({});
+    };
   };
 
-  //*determine a-z sort order
+  //*set state to display selected favorite
+  const onClickSelectFavorite = (favorite) => {
+    setFavoriteSelected(favorite);
+  };
+
+  //*exit displayed selected favorite
+  const onClickExitIcon = () => {
+    setFavoriteSelected({});
+  };
+
+  //DISPLAYS
+  //*determine a-z sort order render
   const sortIcon = 
     isSortedAZ ? 
       <span>(A-Z<i className="fas fa-long-arrow-alt-down"></i>)</span> :
       <span>(Z-A<i className="fas fa-long-arrow-alt-up"></i>)</span>
 
-  //*render table/row/data for hotspots
+  //*render display for hotspots (table/row/data)
   const displayHotspots = () =>
     <table>
       <tbody>
         <tr>
-          <th>
-            <button
-              id="sortTitleBtn"
-              className='header'
-              onClick={() => setIsSortedAZ(!isSortedAZ)}
-          >Title{'\u00A0'}{sortIcon}</button></th>
+          <th
+            id="sortTitleBtn"
+            className='pointer'
+            onClick={() => setIsSortedAZ(!isSortedAZ)}
+          > 
+            Title{'\u00A0'}{sortIcon}</th>
           <th>Description</th>
           <th>Map</th>
           <th>Favorite</th>
@@ -107,8 +123,8 @@ function App() {
               <button
                 className='btn'
                 id='favoriteBtn'
-                onClick={() => onClickFavorite(item)}
-                >
+                onClick={() => onClickAddFavorite(item)}
+              >
                 Favorite
               </button>
             </td>
@@ -117,6 +133,19 @@ function App() {
       </tbody>
     </table>
 
+  //*render display for favoriteSelected
+  const displayFavoriteSelected = () =>
+    <div>
+      <p>{favoriteSelected.description}</p>
+      <span>
+        <i
+          className='far fa-times-circle pointer'
+          id='exitIcon'
+          onClick={() => onClickExitIcon()}
+        />
+      </span>
+    </div>;
+
   return (
     <div className="App">
       <h3>San Diego Top Spots</h3>
@@ -124,18 +153,29 @@ function App() {
       <p>Now you do!</p>
       <hr />
 
+      {/* Favorites Array */}
       <h4>Favorites</h4>
-      { favorites.map(favorite => {
-        return <p>{favorite.name}<span>{'\u00A0'}
-        <a
-          className='delete'
-          id='deleteFavorite'
-          onClick={() => onClickDelete(favorite.id)}
-        >
-          <i className="far fa-trash-alt"></i>
-        </a>
-        </span></p>
-      })}
+      { favorites.map(favorite =>
+        <p key={favorite.id}>
+          <span
+            className='pointer'
+            onClick={() => onClickSelectFavorite(favorite)}
+          >
+            {favorite.name}
+          </span>
+          <span>
+            {'\u00A0'}
+            <i
+              className='far fa-trash-alt pointer'
+              id='deleteFavoriteIcon'
+              onClick={() => onClickDelete(favorite.id)}
+            />
+          </span>
+        </p>
+      )}
+
+      {/* Display Box */}
+      { Object.keys(favoriteSelected).length > 0 && displayFavoriteSelected()}
       <hr />
 
     {/* Display hotspots hits (success) */}
@@ -143,8 +183,7 @@ function App() {
 
     {/* Display error message (failure) */}
     { hotspots.errorMessage && 
-    <h3 className='error'>{ hotspots.errorMessage }</h3>
-    && 
+    <h3 className='error'>{ hotspots.errorMessage }</h3> && 
     <p>...whoops</p>
     }
 
