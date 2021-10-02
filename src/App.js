@@ -91,6 +91,19 @@ function App() {
       <span>(A-Z<i className="fas fa-long-arrow-alt-down"></i>)</span> :
       <span>(Z-A<i className="fas fa-long-arrow-alt-up"></i>)</span>
 
+  //*render display for favoriteSelected
+  const displayFavoriteSelected = () =>
+    <div id='display-box'>
+      <p>{favoriteSelected.description}</p>
+      <span>
+        <i
+          className='far fa-times-circle pointer'
+          id='exitIcon'
+          onClick={() => onClickExitIcon()}
+        />
+      </span>
+    </div>;
+
   //*render display for hotspots (table/row/data)
   const displayHotspots = () =>
     <table>
@@ -132,19 +145,6 @@ function App() {
         ))}
       </tbody>
     </table>
-
-  //*render display for favoriteSelected
-  const displayFavoriteSelected = () =>
-    <div>
-      <p>{favoriteSelected.description}</p>
-      <span>
-        <i
-          className='far fa-times-circle pointer'
-          id='exitIcon'
-          onClick={() => onClickExitIcon()}
-        />
-      </span>
-    </div>;
 
   return (
     <div className="App">
