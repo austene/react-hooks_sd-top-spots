@@ -91,17 +91,24 @@ function App() {
       <span>(A-Z<i className="fas fa-long-arrow-alt-down"></i>)</span> :
       <span>(Z-A<i className="fas fa-long-arrow-alt-up"></i>)</span>
 
-  //*render display for favoriteSelected
+  //*render display box for favoriteSelected information
   const displayFavoriteSelected = () =>
     <div id='display-box'>
       <p>{favoriteSelected.description}</p>
       <span>
         <i
-          className='far fa-times-circle pointer'
+          className='far fa-times-circle pointer top-right'
           id='exitIcon'
           onClick={() => onClickExitIcon()}
         />
       </span>
+      <button
+        className='btn'
+        id='mapBtn'
+        onClick={() => onClickMap(favoriteSelected.location)}
+        >
+        Map
+      </button>
     </div>;
 
   //*render display for hotspots (table/row/data)
@@ -156,7 +163,7 @@ function App() {
       {/* Favorites Array */}
       <h4>Favorites</h4>
       { favorites.map(favorite =>
-        <p key={favorite.id}>
+        <div key={favorite.id}>
           <span
             className='pointer'
             onClick={() => onClickSelectFavorite(favorite)}
@@ -171,22 +178,22 @@ function App() {
               onClick={() => onClickDelete(favorite.id)}
             />
           </span>
-        </p>
+          {/* Display favoriteSelected Box */}
+          <div>{favorite.id === favoriteSelected.id && displayFavoriteSelected()}</div>
+        </div>
       )}
 
-      {/* Display Box */}
-      { Object.keys(favoriteSelected).length > 0 && displayFavoriteSelected()}
       <hr />
 
     {/* Display hotspots hits (success) */}
     { !hotspots.errorMessage && displayHotspots() }
 
     {/* Display error message (failure) */}
-    { hotspots.errorMessage && 
-    <h3 className='error'>{ hotspots.errorMessage }</h3> && 
-    <p>...whoops</p>
+    { 
+      hotspots.errorMessage && 
+      <h3 className='error'>{ hotspots.errorMessage }</h3> && 
+      <p>...whoops</p>
     }
-
       
     </div>
   );
